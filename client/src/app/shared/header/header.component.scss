@@ -1,0 +1,139 @@
+header {
+  border-bottom: 1px solid var(--border);
+  background-color: var(--card);
+  height: 64px;
+  display: flex;
+  align-items: center;
+}
+
+.header-content {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-20);
+  width: 100%;
+}
+
+.logo-container {
+  margin-right: var(--space-4);
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 130px;
+  width: auto;
+  max-width:200px;
+}
+
+.title-section {
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+  margin: 0;
+  color: var(--foreground);
+}
+
+p {
+  font-size: 1rem;
+  font-weight: var(--font-weight-normal);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.border-b { border-bottom: 1px solid var(--border); }
+.border-border { border-color: var(--border); }
+.bg-card { background-color: var(--card); }
+.text-muted-foreground { color: var(--muted-foreground); }
+.text-sm { font-size: 0.875rem; }
+.container { max-width: var(--container-max-width); }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.px-6 { padding-left: var(--space-6); padding-right: var(--space-6); }
+.py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+
+.admin-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.profile-dropdown {
+  position: relative;
+}
+
+.avatar {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.avatar:hover {
+  opacity: 0.8;
+}
+
+.avatar-fallback {
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  z-index: 50;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--accent);
+}
+
+.dropdown-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .header-content {
+    padding: 0 var(--space-6);
+  }
+  
+  h1 {
+    font-size: 1.25rem;
+  }
+  
+  .admin-profile {
+    gap: var(--space-2);
+  }
+}

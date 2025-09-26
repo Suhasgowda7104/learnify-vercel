@@ -1,0 +1,42 @@
+<div class="min-h-screen bg-background">
+  <app-header 
+    title="Learnify Admin" 
+    subtitle="Manage your courses"
+    [showUserInfo]="true">
+  </app-header>
+  
+
+  <main class="main-content">
+    <div class="tabs">
+      <div class="tabs-list">
+        <button 
+          class="tab-trigger" 
+          [class.active]="currentView === 'courses'"
+          (click)="switchView('courses')">
+          All Courses
+        </button>
+        <button 
+          class="tab-trigger" 
+          [class.active]="currentView === 'create'"
+          (click)="switchView('create')">
+          Create New Course
+        </button>
+      </div>
+        
+
+      <div class="tab-content" [class.active]="currentView === 'courses'">
+        <app-course-list [isAdminView]="true"></app-course-list>
+      </div>
+        
+
+      <div class="tab-content" [class.active]="currentView === 'create'">
+        <div class="form-container">
+          <app-course-form [embedded]="true" (courseCreated)="onCourseCreated()"></app-course-form>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+
+  <app-footer></app-footer>
+</div>

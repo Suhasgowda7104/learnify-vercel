@@ -1,0 +1,231 @@
+<div class="min-h-screen bg-background">
+  <app-header 
+    [title]="getHeaderTitle()" 
+    [subtitle]="getHeaderSubtitle()"
+    [showUserInfo]="true">
+  </app-header>
+
+  <main class="main-content">
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="spinner"></div>
+      <p class="text-muted-foreground">Loading course details...</p>
+    </div>
+
+    <div *ngIf="errorMessage && !isLoading" class="error-container">
+      <h3>Unable to load course</h3>
+      <p class="text-muted-foreground">{{ errorMessage }}</p>
+      <div class="error-actions">
+        <button class="btn btn-outline" (click)="goBack()">Go Back</button>
+        <button class="btn btn-primary" (click)="loadCourseDetails(courseId!)" *ngIf="courseId">Try Again</button>
+      </div>
+    </div>
+
+    <div class="course-details" *ngIf="course && !isLoading && !errorMessage">
+      <div class="details-header">
+        <button class="btn btn-outline" (click)="goBack()">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Courses
+        </button>
+        <h1 class="flex-1">Course Details</h1>
+        <div class="action-buttons" *ngIf="isAdmin">
+          <button class="btn btn-outline btn-sm" (click)="editCourse()">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+            </svg>
+            Edit
+          </button>
+          <button class="btn btn-destructive btn-sm" (click)="deleteCourse()">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <!-- Course Information Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="flex items-start justify-between">
+            <h2 class="card-title">{{ course.title }}</h2>
+            <span class="status-badge" [class]="course.isActive ? 'status-active' : 'status-inactive'">
+              {{ course.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="content-section">
+            <h3>Description</h3>
+            <p class="text-muted-foreground">{{ course.description }}</p>
+          </div>
+          
+          <div class="details-grid">
+            <div class="detail-item">
+              <h4>Duration</h4>
+              <p class="text-muted-foreground">{{ formatDuration(course.durationHours) }}</p>
+            </div>
+            <div class="detail-item">
+              <h4>Price</h4>
+              <p class="text-muted-foreground">{{ formatPrice(course.price) }}</p>
+            </div>
+            <div class="detail-item" *ngIf="isAdmin">
+              <h4>Enrollment Count</h4>
+              <div class="enrollment-count-container">
+                <span class="text-muted-foreground">{{ enrollmentCount }} Enrolled</span>
+                <button class="eye-icon-btn" 
+                        (click)="showEnrolledUsers()" 
+                        [disabled]="enrollmentCount === 0"
+                        title="View enrolled students">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="detail-item" *ngIf="!isAdmin">
+              <h4>Status</h4>
+              <p class="text-muted-foreground">{{ isEnrolled ? 'Enrolled' : 'Not Enrolled'}}</p>
+            </div>
+            <div class="detail-item">
+              <h4>Created</h4>
+              <p class="text-muted-foreground">{{ course.created_at | date  }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Content Card -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            Course Content 
+            <span>({{ course.contents?.length || 0 }} items)</span>
+          </h2>
+        </div>
+        <div class="card-content">
+          <!-- Show content for enrolled students or non-students -->
+          <div *ngIf="(!isStudent || isEnrolled) && course.contents && course.contents.length > 0; else noContentOrNotEnrolled">
+            <div class="content-list">
+              <div class="content-item clickable-content" 
+                   *ngFor="let content of course.contents; let i = index"
+                   (click)="openContent(content)"
+                   [title]="'Click to open: ' + content.title">
+                <div class="content-item-info">
+                  <svg class="content-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" 
+                        *ngIf="content.contentType === 'text'">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                   </svg>
+                   <svg class="content-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" 
+                        *ngIf="content.contentType === 'pdf'">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                           d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707L13.293 3.293A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                   </svg>
+                  <div class="content-details">
+                    <h4>{{ content.title }}</h4>
+                    <p class="text-muted-foreground text-sm" *ngIf="content.filePath">{{ content.filePath }}</p>
+                  </div>
+                </div>
+                <div class="content-item-meta">
+                  <span class="content-type-badge content-type-url">
+                    URL
+                  </span>
+                  <span class="text-xs text-muted-foreground" *ngIf="content.created_at">
+                     {{ formatDate(content.created_at) }}
+                   </span>
+                  <svg class="external-link-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #noContentOrNotEnrolled>
+            <!-- Show enrollment prompt for unenrolled students -->
+             <div *ngIf="isStudent && !isEnrolled" class="enrollment-prompt">
+               <h3>Enroll now to view the course contents</h3>
+               <p class="text-muted-foreground">You need to enroll in this course to access the learning materials and content.</p>
+               <button 
+                 class="btn btn-primary" 
+                 (click)="enrollInCourse()" 
+                 [disabled]="isEnrollmentLoading">
+                 <span *ngIf="!isEnrollmentLoading">Enroll</span>
+                 <span *ngIf="isEnrollmentLoading">
+                   <svg class="icon animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                   </svg>
+                   Enrolling...
+                 </span>
+               </button>
+             </div>
+            
+            <!-- Show no content message for other cases -->
+            <div *ngIf="!isStudent || (isStudent && isEnrolled)" class="empty-content-state">
+              <svg class="empty-content-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <h3>No Content Available</h3>
+              <p class="text-muted-foreground">This course doesn't have any content yet.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</div>
+
+<!-- Enrolled Users Popup Modal -->
+<div class="enrolled-users-modal" *ngIf="showEnrolledUsersModal" (click)="closeEnrolledUsersModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Enrolled Students</h3>
+      <button class="close-btn" (click)="closeEnrolledUsersModal()">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div *ngIf="isLoadingEnrolledUsers" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading enrolled students...</p>
+      </div>
+      
+      <div *ngIf="enrolledUsersError && !isLoadingEnrolledUsers" class="error-state">
+        <p class="error-message">{{ enrolledUsersError }}</p>
+        <button class="btn btn-outline btn-sm" (click)="loadEnrolledUsers()">Try Again</button>
+      </div>
+      
+      <div *ngIf="enrolledUsers.length > 0 && !isLoadingEnrolledUsers && !enrolledUsersError" class="users-list">
+        <div class="user-item" *ngFor="let user of enrolledUsers">
+              <div class="user-avatar">
+                {{ getUserInitials(user.userName) }}
+              </div>
+              <div class="user-info">
+                <div class="user-name">{{ user.userName }}</div>
+                <div class="user-email">{{ user.email }}</div>
+                <div class="user-enrollment-date">Enrolled On: {{ formatDate(user.enrollmentDate) }}</div>
+              </div>
+            </div>
+      </div>
+      
+      <div *ngIf="enrolledUsers.length === 0 && !isLoadingEnrolledUsers && !enrolledUsersError" class="empty-state">
+        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <h4>No Students Enrolled</h4>
+        <p>No students have enrolled in this course yet.</p>
+      </div>
+    </div>
+  </div>
+</div>

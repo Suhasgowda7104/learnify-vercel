@@ -1,0 +1,259 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  padding: 2rem 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth-logo {
+  height: 110px;
+  width: auto;
+  max-width: 285px;
+}
+
+.brand-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.brand-subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 400;
+}
+
+.auth-tabs {
+  display: flex;
+  background-color: #e5e7eb;
+  border-radius: 50px;
+  padding: 4px;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  border-radius: 46px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    background-color: white;
+    color: #1a1a1a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  &:hover:not(.active) {
+    color: #374151;
+  }
+}
+
+.auth-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  text-align: left;
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem 0;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+  }
+}
+
+.auth-form {
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    .form-group.half-width {
+      flex: 1;
+      margin-bottom: 0;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background-color: #f9fafb;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+
+      &::placeholder {
+        color: #9ca3af;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      &.error {
+        border-color: #ef4444;
+        background-color: #fef2f2;
+
+        &:focus {
+          border-color: #ef4444;
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+      }
+    }
+
+    .error-message {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #ef4444;
+    }
+  }
+}
+
+.alert {
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+
+  &.error {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+
+  &.success {
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+  }
+}
+
+.submit-button {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &:hover:not(:disabled) {
+    background-color: #000000;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive design
+@media (max-width: 640px) {
+  .auth-container {
+    padding: 1rem;
+  }
+
+  .auth-header {
+    margin-bottom: 2rem;
+  }
+
+  .brand-title {
+    font-size: 2rem;
+  }
+
+  .auth-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .auth-tabs {
+    max-width: 100%;
+  }
+
+  .auth-form .form-row {
+    flex-direction: column;
+    gap: 0;
+
+    .form-group.half-width {
+      margin-bottom: 1.5rem;
+    }
+  }
+}

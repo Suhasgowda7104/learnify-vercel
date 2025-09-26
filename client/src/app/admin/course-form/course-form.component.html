@@ -1,0 +1,223 @@
+<div class="min-h-screen bg-background" *ngIf="!embedded">
+  <app-header 
+    title="Admin Dashboard" 
+    subtitle="Manage your courses"
+    [showUserInfo]="true">
+  </app-header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <button class="btn btn-outline back-button" (click)="onCancel()">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Course Details
+      </button>
+      <h1 class="page-title">{{ isEditMode ? 'Edit Course' : 'Create New Course' }}</h1>
+    </div>
+
+    <div class="form-card">
+      <div class="card-header">
+        <h2 class="card-title">Course Information</h2>
+      </div>
+      
+      <div class="card-content">
+        <ng-container *ngTemplateOutlet="courseFormTemplate"></ng-container>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</div>
+
+<div class="embedded-form" *ngIf="embedded">
+  <div class="form-card">
+    <div class="card-header">
+      <h2 class="card-title">Course Information</h2>
+    </div>
+    
+    <div class="card-content">
+      <ng-container *ngTemplateOutlet="courseFormTemplate"></ng-container>
+    </div>
+  </div>
+</div>
+
+<ng-template #courseFormTemplate>
+  <form class="course-form" [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="courseName">Course Title *</label>
+      <input 
+        type="text" 
+        id="courseName" 
+        formControlName="title"
+        placeholder="Enter course title" 
+        [class.error]="isFieldInvalid('title')"
+        class="form-input">
+      <div class="error-message" *ngIf="isFieldInvalid('title')">
+        {{ getFieldError('title') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Course Description *</label>
+      <textarea 
+        id="description" 
+        formControlName="description"
+        placeholder="Enter course description" 
+        rows="4" 
+        [class.error]="isFieldInvalid('description')"
+        class="form-textarea">
+      </textarea>
+      <div class="error-message" *ngIf="isFieldInvalid('description')">
+        {{ getFieldError('description') }}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="duration">Duration (Hours)</label>
+        <input 
+          type="text" 
+          id="duration" 
+          formControlName="durationHours"
+          placeholder="e.g., 40" 
+          [class.error]="isFieldInvalid('durationHours')"
+          class="form-input">
+        <div class="error-message" *ngIf="isFieldInvalid('durationHours')">
+          {{ getFieldError('durationHours') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="price">Price *</label>
+        <input 
+          type="text" 
+          id="price" 
+          formControlName="price"
+          placeholder="e.g., 299.00" 
+          [class.error]="isFieldInvalid('price')"
+          class="form-input">
+        <div class="error-message" *ngIf="isFieldInvalid('price')">
+          {{ getFieldError('price') }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Content Section -->
+    <div class="course-content-section">
+      <div class="section-header">
+        <label class="section-title">Course Content</label>
+        <button 
+          type="button" 
+          class="btn btn-outline add-content-btn"
+          (click)="addCourseContent()">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Add Content
+        </button>
+      </div>
+      
+      <div class="content-items" formArrayName="courseContent">
+        <div 
+          class="content-item" 
+          *ngFor="let contentGroup of courseContent.controls; let i = index" 
+          [formGroupName]="i">
+          
+          <div class="content-item-header">
+            <h4 class="content-item-title">Content Item {{ i + 1 }}</h4>
+            <button 
+              type="button" 
+              class="btn btn-danger remove-btn"
+              (click)="removeCourseContent(i)"
+              [disabled]="courseContent.length <= 0">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="content-form-row">
+            <div class="form-group">
+              <label [for]="'contentTitle' + i">Content Title</label>
+              <input 
+                type="text" 
+                [id]="'contentTitle' + i"
+                formControlName="title"
+                placeholder="e.g., Introduction to React" 
+                class="form-input">
+            </div>
+            
+            <div class="form-group">
+              <label [for]="'contentType' + i">Content Type</label>
+              <select 
+                [id]="'contentType' + i"
+                formControlName="contentType"
+                class="form-select">
+                <option value="" disabled>Select type</option>
+                <option value="text">📄 Text</option>
+                <option value="pdf">📁 PDF</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label [for]="'filePath' + i">File Path</label>
+              <input 
+                type="text" 
+                [id]="'filePath' + i"
+                formControlName="filePath"
+                placeholder="e.g., /content/intro.txt" 
+                class="form-input">
+            </div>
+          </div>
+        </div>
+        
+        <div class="no-content-message" *ngIf="courseContent.length === 0">
+          <p>No course content added yet. Click "Add Content" to start adding course materials.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group checkbox-group">
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          formControlName="isActive"
+          class="form-checkbox"
+        />
+        <span class="checkmark"></span>
+        Course is active and available for enrollment
+      </label>
+    </div>
+
+    <div class="alert error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <div class="alert success" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <div class="form-actions">
+      <button 
+        type="button" 
+        class="btn btn-outline cancel-btn"
+        (click)="onCancel()"
+        [disabled]="isLoading"
+        *ngIf="!embedded">
+        Cancel
+      </button>
+      
+      <button 
+        type="submit" 
+        class="btn btn-primary submit-btn"
+        [disabled]="courseForm.invalid || isLoading">
+        <span *ngIf="isLoading" class="spinner"></span>
+        {{ isLoading 
+            ? (isEditMode ? 'Updating...' : 'Creating...') 
+            : (isEditMode ? 'Update Course' : 'Create Course') 
+        }}
+      </button>
+    </div>
+  </form>
+</ng-template>

@@ -1,0 +1,42 @@
+<div class="min-h-screen bg-background">
+  <!-- Header -->
+  <app-header 
+    title="Learnify"
+    subtitle="Explore and manage your courses"
+    [showUserInfo]="true">
+  </app-header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="tabs">
+      <div class="tabs-list">
+        <button 
+          class="tab-trigger" 
+          [class.active]="currentView === 'all'"
+          (click)="switchView('all')">
+          All Courses
+        </button>
+        <button 
+          class="tab-trigger" 
+          [class.active]="currentView === 'enrolled'"
+          (click)="switchView('enrolled')">
+          My Enrollments
+        </button>
+      </div>
+        
+
+      <div class="tab-content" [class.active]="currentView === 'all'">
+        <app-course-list [isAdminView]="false" [showActions]="true"></app-course-list>
+      </div>
+        
+
+      <div class="tab-content" [class.active]="currentView === 'enrolled'">
+        <app-course-list [isAdminView]="false" [showActions]="true" [showEnrolledOnly]="true"></app-course-list>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>
+  

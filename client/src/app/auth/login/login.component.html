@@ -1,0 +1,79 @@
+<div class="auth-container">
+  <div class="auth-header">
+    <div class="logo-container">
+      <img src="/Learnify_logo_auth.png" alt="Learnify Logo" class="auth-logo">
+    </div>
+    <p class="brand-subtitle">Login or create an account to get started</p>
+  </div>
+
+  <div class="auth-tabs">
+    <button class="tab-button active" routerLink="/login">Login</button>
+    <button class="tab-button" routerLink="/register">Register</button>
+  </div>
+
+  <div class="auth-card">
+    <div class="card-header">
+      <h2>Login</h2>
+      <p>Enter your credentials to access your account</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-input"
+          [class.error]="isFieldInvalid('email')"
+          placeholder="Enter your email"
+        />
+        <div class="error-message" *ngIf="isFieldInvalid('email')">
+          <div *ngIf="loginForm.get('email')?.errors?.['required']">
+            Email is required
+          </div>
+          <div *ngIf="loginForm.get('email')?.errors?.['email']">
+            Please enter a valid email
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="form-input"
+          [class.error]="isFieldInvalid('password')"
+          placeholder="Enter your password"
+        />
+        <div class="error-message" *ngIf="isFieldInvalid('password')">
+          <div *ngIf="loginForm.get('password')?.errors?.['required']">
+            Password is required
+          </div>
+          <div *ngIf="loginForm.get('password')?.errors?.['minlength']">
+            Password must be at least 6 characters
+          </div>
+        </div>
+      </div>
+
+      <div class="alert error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="alert success" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="loginForm.invalid || isLoading"
+      >
+        <span *ngIf="isLoading" class="spinner"></span>
+        {{ isLoading ? 'Signing in...' : 'Login' }}
+      </button>
+    </form>
+  </div>
+</div>
