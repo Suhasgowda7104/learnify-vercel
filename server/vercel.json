@@ -1,33 +1,34 @@
 {
   "version": 2,
   "name": "learnify-server",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/v1/(.*)",
-      "destination": "/index.js"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/index.js"
-    },
-    {
-      "source": "/",
-      "destination": "/index.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.js"
+      "src": "index.js",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
     }
   ],
-  "functions": {
-    "index.js": {
-      "maxDuration": 30,
-      "memory": 1024
+  "routes": [
+    {
+      "src": "/api/v1/(.*)",
+      "dest": "/index.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/index.js"
+    },
+    {
+      "src": "/",
+      "dest": "/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.js"
     }
-  },
-  "regions": ["iad1"],
-  "installCommand": "npm install",
-  "buildCommand": "echo 'No build step required'",
-  "outputDirectory": ".",
-  "framework": null
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
