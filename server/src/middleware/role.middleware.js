@@ -8,7 +8,7 @@ const roleMiddleware = (requiredRoles) => {
         });
       }
 
-      if (!req.user.role) {
+      if (!req.user.roleId) {
         return res.status(403).json({
           success: false,
           message: 'User role not found'
@@ -17,13 +17,13 @@ const roleMiddleware = (requiredRoles) => {
 
       const roles = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
       
-      const userRole = req.user.role.toLowerCase();
+      const userRole = req.user.roleId.name.toLowerCase();
       const hasRequiredRole = roles.some(role => role.toLowerCase() === userRole);
 
       if (!hasRequiredRole) {
         return res.status(403).json({
           success: false,
-          message: `Access denied. Required role(s): ${roles.join(', ')}. Your role: ${req.user.role}`
+          message: `Access denied. Required role(s): ${roles.join(', ')}. Your role: ${req.user.roleId.name}`
         });
       }
 

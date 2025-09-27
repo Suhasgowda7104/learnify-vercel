@@ -23,14 +23,9 @@ export const authenticateToken = async (req, res, next) => {
     const decoded = jwt.verify(token, jwtConfig.secret);
     
     // Find user in database
-    const user = await User.findByPk(decoded.userId, {
-      include: [{
-        model: Role,
-        as: 'role',
-        attributes: ['id', 'name']
-      }],
-      attributes: { exclude: ['password'] }
-    });
+    const user = await User.findById(decoded.userId)
+      .populate('roleId', 'name')
+      .select('-password');
 
     if (!user) {
       return res.status(401).json({
@@ -85,14 +80,14 @@ export const requireRole = (roleName) => {
         });
       }
 
-      if (!req.user.role) {
+      if (!req.user.roleId) {
         return res.status(403).json({
           success: false,
           message: 'User role not found'
         });
       }
 
-      if (req.user.role.name !== roleName) {
+      if (req.user.roleId.name !== roleName) {
         return res.status(403).json({
           success: false,
           message: `Access denied. ${roleName} role required`
@@ -123,14 +118,14 @@ export const requireAnyRole = (roleNames) => {
         });
       }
 
-      if (!req.user.role) {
+      if (!req.user.roleId) {
         return res.status(403).json({
           success: false,
           message: 'User role not found'
         });
       }
 
-      if (!roleNames.includes(req.user.role.name)) {
+      if (!roleNames.includes(req.user.roleId.name)) {
         return res.status(403).json({
           success: false,
           message: `Access denied. One of these roles required: ${roleNames.join(', ')}`
@@ -181,7 +176,7 @@ export const requireOwnershipOrAdmin = (userIdField = 'user_id') => {
     }
 
     // Admin can access everything
-    if (req.user.role.name === 'admin') {
+    if (req.user.roleId.name === 'admin') {
       return next();
     }
 
