@@ -14,8 +14,23 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Configure CORS for both development and production
+const allowedOrigins = [
+  'http://localhost:4200', 
+  'http://127.0.0.1:4200', 
+  'http://localhost:8081', 
+  'http://127.0.0.1:8081',
+  'https://learnify-vercel.vercel.app' // Production frontend URL
+];
+
+// Add ALLOWED_ORIGINS from environment if specified
+if (process.env.ALLOWED_ORIGINS) {
+  const envOrigins = process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim());
+  allowedOrigins.push(...envOrigins);
+}
+
 app.use(cors({
-  origin: ['http://localhost:4200', 'http://127.0.0.1:4200', 'http://localhost:8081', 'http://127.0.0.1:8081'], // Angular dev server
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Original-Password']
@@ -68,14 +83,31 @@ app.get('/api/v1/health', async (req, res) => {
   });
 });
 
-app.listen(PORT, async () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-  
-  const dbConnected = await testConnection();
-  if (dbConnected) {
-    console.log('✅ Database connected');
-    await syncDatabase();
-  } else {
-    console.log('❌ Failed to connect to database');
-  }
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, async () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    
+    const dbConnected = await testConnection();
+    if (dbConnected) {
+      console.log('✅ Database connected');
+      await syncDatabase();
+    } else {
+      console.log('❌ Failed to connect to database');
+    }
+  });
+} else {
+  // Initialize database connection for production
+  (async () => {
+    const dbConnected = await testConnection();
+    if (dbConnected) {
+      console.log('✅ Database connected');
+      await syncDatabase();
+    } else {
+      console.log('❌ Failed to connect to database');
+    }
+  })();
+}
+
+// Export for Vercel serverless functions
+export default app;
