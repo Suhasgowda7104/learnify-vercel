@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface CourseContent {
   id: string;
@@ -65,8 +66,8 @@ export interface EnrolledUser {
   providedIn: 'root'
 })
 export class CourseService {
-  private adminApiUrl = 'http://localhost:5000/api/v1/admin';
-  private publicApiUrl = 'http://localhost:5000/api/v1/courses';
+  private adminApiUrl = `${environment.apiUrl}/admin`;
+  private publicApiUrl = `${environment.apiUrl}/courses`;
 
   constructor(
     private http: HttpClient,

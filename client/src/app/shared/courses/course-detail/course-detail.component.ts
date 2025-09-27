@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CourseService, Course, CourseContent, EnrolledUser } from '../../../services/course/course.service';
 import { AuthService } from '../../../services/auth/auth.service';
 import { EnrollmentService } from '../../../services/enrollment/enrollment.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-course-detail',
@@ -205,7 +206,7 @@ formatPrice(price: number): string {
     if (content.filePath.startsWith('http://') || content.filePath.startsWith('https://')) {
       window.open(content.filePath, '_blank', 'noopener,noreferrer');
     } else {
-      const baseUrl = 'http://localhost:5000';
+      const baseUrl = environment.baseUrl;
       const fullUrl = content.filePath.startsWith('/') 
         ? `${baseUrl}${content.filePath}` 
         : `${baseUrl}/${content.filePath}`;

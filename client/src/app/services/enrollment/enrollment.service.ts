@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 export interface EnrollmentResponse {
   success: boolean;
@@ -14,7 +15,7 @@ export interface EnrollmentResponse {
   providedIn: 'root'
 })
 export class EnrollmentService {
-  private apiUrl = 'http://localhost:5000/api/v1/enrollments';
+  private apiUrl = `${environment.apiUrl}/enrollments`;
 
   constructor(
     private http: HttpClient,
